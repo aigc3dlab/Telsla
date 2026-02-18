@@ -6,13 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>特斯拉 CyberCab 深度调研报告 - AIGC_3D视觉实验室</title>
     <!-- Tailwind CSS -->
-    <!-- Tailwind CSS (Local with CDN Fallback) -->
-    <script src="js/tailwind.js" onerror="this.onerror=null; this.src='https://cdn.tailwindcss.com';"></script>
-    <!-- Chart.js (Local with CDN Fallback) -->
-    <script src="js/chart.js" onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/npm/chart.js';"></script>
-    <!-- Plotly.js (Local with CDN Fallback) -->
-    <script src="js/plotly.js"
-        onerror="this.onerror=null; this.src='https://cdn.plot.ly/plotly-2.35.2.min.js';"></script>
+    <!-- Tailwind CSS (Direct Official CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans SC', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js (Direct CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Plotly.js (Direct CDN) -->
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap"
         rel="stylesheet">
