@@ -19,9 +19,9 @@
             }
         }
     </script>
-    <!-- Chart.js (Direct CDN) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Plotly.js (Direct CDN) -->
+    <!-- Chart.js (v4 UMD CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <!-- Plotly.js (Official CDN) -->
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap"
@@ -512,180 +512,186 @@
     </footer>
 
     <script>
-        // ----------------------------------------------------
-        // 数据处理逻辑
-        // ----------------------------------------------------
+        window.addEventListener('load', function () {
+            // ----------------------------------------------------
+            // 数据处理逻辑
+            // ----------------------------------------------------
 
-        // 文字折行
-        function wrapLabel(str, maxLen = 14) {
-            if (!str || str.length <= maxLen) return str;
-            const res = [];
-            for (let i = 0; i < str.length; i += maxLen) {
-                res.push(str.substring(i, i + maxLen));
-            }
-            return res;
-        }
-
-        // 统一 Tooltip 回调
-        const tooltipConfig = {
-            callbacks: {
-                title: function (items) {
-                    const label = items[0].chart.data.labels[items[0].dataIndex];
-                    return Array.isArray(label) ? label.join('') : label;
+            // 文字折行
+            function wrapLabel(str, maxLen = 14) {
+                if (!str || str.length <= maxLen) return str;
+                const res = [];
+                for (let i = 0; i < str.length; i += maxLen) {
+                    res.push(str.substring(i, i + maxLen));
                 }
+                return res;
             }
-        };
 
-        const chartCommonOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { labels: { color: '#64748b', font: { family: 'Noto Sans SC', size: 10 } } },
-                tooltip: tooltipConfig
-            },
-            scales: {
-                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
-                x: { grid: { display: false }, ticks: { color: '#64748b' } }
-            }
-        };
-
-        // ----------------------------------------------------
-        // 图表 1: 成本对比柱状图
-        // ----------------------------------------------------
-        try {
-            const ctxCost = document.getElementById('costComparisonChart').getContext('2d');
-            new Chart(ctxCost, {
-                type: 'bar',
-                data: {
-                    labels: ['私家燃油车', '网约车(有司机)', '城市公交(补贴后)', '特斯拉CyberCab'].map(l => wrapLabel(l)),
-                    datasets: [{
-                        label: '每英里成本 (USD)',
-                        data: [0.72, 2.65, 1.20, 0.20],
-                        backgroundColor: ['#1e293b', '#334155', '#475569', '#22d3ee'],
-                        borderRadius: 8
-                    }]
-                },
-                options: chartCommonOptions
-            });
-        } catch (error) {
-            console.error("Error rendering Cost Chart:", error);
-            document.getElementById('costComparisonChart').parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500 font-bold">图表加载失败 (Chart Load Failed)</div>';
-        }
-
-        // ----------------------------------------------------
-        // 图表 2: 制造效率进化折线图
-        // ----------------------------------------------------
-        try {
-            const ctxEfficiency = document.getElementById('efficiencyChart').getContext('2d');
-            new Chart(ctxEfficiency, {
-                type: 'line',
-                data: {
-                    labels: ['Model S (2012)', 'Model 3 (2017)', 'Model Y (2020)', 'CyberCab (2026E)'],
-                    datasets: [{
-                        label: '制造复杂度 (指数递减)',
-                        data: [100, 65, 45, 18],
-                        borderColor: '#a855f7',
-                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#fff'
-                    }]
-                },
-                options: chartCommonOptions
-            });
-        } catch (error) {
-            console.error("Error rendering Efficiency Chart:", error);
-            document.getElementById('efficiencyChart').parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500 font-bold">图表加载失败 (Chart Load Failed)</div>';
-        }
-
-        // ----------------------------------------------------
-        // 图表 3: FSD 累计里程面积图
-        // ----------------------------------------------------
-        try {
-            const ctxFsd = document.getElementById('fsdMilesChart').getContext('2d');
-            new Chart(ctxFsd, {
-                type: 'line',
-                data: {
-                    labels: ['2021', '2022', '2023', '2024H1', '2024Q3', '2025E', '2026E'],
-                    datasets: [{
-                        label: '累计训练里程 (十亿英里)',
-                        data: [0.5, 1.8, 4.5, 11.0, 18.0, 35.0, 75.0],
-                        borderColor: '#22d3ee',
-                        backgroundColor: 'rgba(34, 211, 238, 0.15)',
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#22d3ee',
-                        pointRadius: 5
-                    }]
-                },
-                options: chartCommonOptions
-            });
-        } catch (error) {
-            console.error("Error rendering FSD Chart:", error);
-            document.getElementById('fsdMilesChart').parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500 font-bold">图表加载失败 (Chart Load Failed)</div>';
-        }
-
-        // ----------------------------------------------------
-        // 图表 4: 利润增长阶梯图
-        // ----------------------------------------------------
-        try {
-            const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
-            new Chart(ctxRevenue, {
-                type: 'bar',
-                data: {
-                    labels: ['2025', '2026', '2027', '2028', '2029', '2030'],
-                    datasets: [{
-                        label: 'Robotaxi 业务营业利润',
-                        data: [0, 8, 45, 120, 310, 850],
-                        backgroundColor: '#3b82f6',
-                        borderRadius: 4
-                    }]
-                },
-                options: chartCommonOptions
-            });
-        } catch (error) {
-            console.error("Error rendering Revenue Chart:", error);
-            document.getElementById('revenueChart').parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500 font-bold">图表加载失败 (Chart Load Failed)</div>';
-        }
-
-        // ----------------------------------------------------
-        // 图表 5: 安全性散点图 (Plotly)
-        // ----------------------------------------------------
-        try {
-            const plotData = [{
-                x: [0.20, 2.65, 0.72, 1.20], // 成本
-                y: [15.0, 1.0, 1.5, 3.2],    // 安全指数 (相对人类)
-                mode: 'markers+text',
-                type: 'scatter',
-                name: '交通工具',
-                text: ['CyberCab', '网约车', '私家车', '公交巴士'],
-                textposition: 'top center',
-                textfont: { family: 'Noto Sans SC', color: '#cbd5e1', size: 10 },
-                marker: {
-                    size: [60, 25, 30, 35],
-                    color: ['#22d3ee', '#334155', '#475569', '#64748b'],
-                    opacity: 0.8,
-                    line: { color: 'white', width: 2 }
+            // 统一 Tooltip 回调
+            const tooltipConfig = {
+                callbacks: {
+                    title: function (items) {
+                        const label = items[0].chart.data.labels[items[0].dataIndex];
+                        return Array.isArray(label) ? label.join('') : label;
+                    }
                 }
-            }];
-
-            const plotLayout = {
-                title: { text: '安全性与运营成本的前沿分布 (AIGC_3D 实验室数据)', font: { color: '#94a3b8', size: 14 } },
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                xaxis: { title: '成本 (USD/Mile)', gridcolor: '#1e293b', tickfont: { color: '#64748b' } },
-                yaxis: { title: '安全性指数 (Log)', gridcolor: '#1e293b', tickfont: { color: '#64748b' }, type: 'log' },
-                margin: { t: 60, b: 60, l: 60, r: 20 },
-                hovermode: 'closest'
             };
 
-            Plotly.newPlot('safetyPlot', plotData, plotLayout, { responsive: true, displayModeBar: false });
-        } catch (error) {
-            console.error("Error rendering Safety Plot (Plotly):", error);
-            // Optional: fallback UI could go here
-            document.getElementById('safetyPlot').innerHTML = '<div class="flex items-center justify-center h-full text-slate-500">图表加载失败，请检查网络连接</div>';
-        }
+            const chartCommonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#64748b', font: { family: 'Noto Sans SC', size: 10 } } },
+                    tooltip: tooltipConfig
+                },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                    x: { grid: { display: false }, ticks: { color: '#64748b' } }
+                }
+            };
 
+            // ----------------------------------------------------
+            // 图表 1: 成本对比柱状图
+            // ----------------------------------------------------
+            try {
+                const ctxCost = document.getElementById('costComparisonChart').getContext('2d');
+                new Chart(ctxCost, {
+                    type: 'bar',
+                    data: {
+                        labels: ['私家燃油车', '网约车(有司机)', '城市公交(补贴后)', '特斯拉CyberCab'].map(l => wrapLabel(l)),
+                        datasets: [{
+                            label: '每英里成本 (USD)',
+                            data: [0.72, 2.65, 1.20, 0.20],
+                            backgroundColor: ['#1e293b', '#334155', '#475569', '#22d3ee'],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: chartCommonOptions
+                });
+            } catch (error) {
+                console.error("Error rendering Cost Chart:", error);
+                document.getElementById('costComparisonChart').parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500 font-bold">图表加载失败 (Chart Load Failed)</div>';
+            }
+
+            // ----------------------------------------------------
+            // 图表 2: 制造效率进化折线图
+            // ----------------------------------------------------
+            try {
+                const ctxEfficiency = document.getElementById('efficiencyChart').getContext('2d');
+                new Chart(ctxEfficiency, {
+                    type: 'line',
+                    data: {
+                        labels: ['Model S (2012)', 'Model 3 (2017)', 'Model Y (2020)', 'CyberCab (2026E)'],
+                        datasets: [{
+                            label: '制造复杂度 (指数递减)',
+                            data: [100, 65, 45, 18],
+                            borderColor: '#a855f7',
+                            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#fff'
+                        }]
+                    },
+                    options: chartCommonOptions
+                });
+            } catch (error) {
+                console.error("Error rendering Efficiency Chart:", error);
+                document.getElementById('efficiencyChart').parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500 font-bold">图表加载失败 (Chart Load Failed)</div>';
+            }
+
+            // ----------------------------------------------------
+            // 图表 3: FSD 累计里程面积图
+            // ----------------------------------------------------
+            try {
+                const ctxFsd = document.getElementById('fsdMilesChart').getContext('2d');
+                new Chart(ctxFsd, {
+                    type: 'line',
+                    data: {
+                        labels: ['2021', '2022', '2023', '2024H1', '2024Q3', '2025E', '2026E'],
+                        datasets: [{
+                            label: '累计训练里程 (十亿英里)',
+                            data: [0.5, 1.8, 4.5, 11.0, 18.0, 35.0, 75.0],
+                            borderColor: '#22d3ee',
+                            backgroundColor: 'rgba(34, 211, 238, 0.15)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#22d3ee',
+                            pointRadius: 5
+                        }]
+                    },
+                    options: chartCommonOptions
+                });
+            } catch (error) {
+                console.error("Error rendering FSD Chart:", error);
+                document.getElementById('fsdMilesChart').parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500 font-bold">图表加载失败 (Chart Load Failed)</div>';
+            }
+
+            // ----------------------------------------------------
+            // 图表 4: 利润增长阶梯图
+            // ----------------------------------------------------
+            try {
+                const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+                new Chart(ctxRevenue, {
+                    type: 'bar',
+                    data: {
+                        labels: ['2025', '2026', '2027', '2028', '2029', '2030'],
+                        datasets: [{
+                            label: 'Robotaxi 业务营业利润',
+                            data: [0, 8, 45, 120, 310, 850],
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: chartCommonOptions
+                });
+            } catch (error) {
+                console.error("Error rendering Revenue Chart:", error);
+                document.getElementById('revenueChart').parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-red-500 font-bold">图表加载失败 (Chart Load Failed)</div>';
+            }
+
+            // ----------------------------------------------------
+            // 图表 5: 安全性散点图 (Plotly)
+            // ----------------------------------------------------
+            try {
+                const plotData = [{
+                    x: [0.20, 2.65, 0.72, 1.20], // 成本
+                    y: [15.0, 1.0, 1.5, 3.2],    // 安全指数 (相对人类)
+                    mode: 'markers+text',
+                    type: 'scatter',
+                    name: '交通工具',
+                    text: ['CyberCab', '网约车', '私家车', '公交巴士'],
+                    textposition: 'top center',
+                    textfont: { family: 'Noto Sans SC', color: '#cbd5e1', size: 10 },
+                    marker: {
+                        size: [60, 25, 30, 35],
+                        color: ['#22d3ee', '#334155', '#475569', '#64748b'],
+                        opacity: 0.8,
+                        line: { color: 'white', width: 2 }
+                    }
+                }];
+
+                const plotLayout = {
+                    title: { text: '安全性与运营成本的前沿分布 (AIGC_3D 实验室数据)', font: { color: '#94a3b8', size: 14 } },
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    xaxis: { title: '成本 (USD/Mile)', gridcolor: '#1e293b', tickfont: { color: '#64748b' } },
+                    yaxis: { title: '安全性指数 (Log)', gridcolor: '#1e293b', tickfont: { color: '#64748b' }, type: 'log' },
+                    margin: { t: 60, b: 60, l: 60, r: 20 },
+                    hovermode: 'closest'
+                };
+
+                const safetyEl = document.getElementById('safetyPlot');
+                if (safetyEl) {
+                    Plotly.newPlot('safetyPlot', plotData, plotLayout, { responsive: true, displayModeBar: false });
+                }
+            } catch (error) {
+                console.error("Error rendering Safety Plot (Plotly):", error);
+                const safetyEl = document.getElementById('safetyPlot');
+                if (safetyEl) {
+                    safetyEl.innerHTML = '<div class="flex items-center justify-center h-full text-slate-500">图表加载失败，请检查网络连接</div>';
+                }
+            }
+        });
     </script>
 </body>
 
